@@ -1,0 +1,4 @@
+<launch>
+    <node name="parser" pkg="doods_parser" type="obj_data.py" output="screen"/>
+    <!-- <node name="republisher" pkg="image_transport" type="republish" args=" raw in:=/uav_camera/detected compressed out:=/uav_camera/detected" />  -->
+</launch>

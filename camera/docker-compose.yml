@@ -1,0 +1,16 @@
+version: "3"
+services:
+  webcam:
+    build: .
+    network_mode: host
+    container_name: cam
+    environment:
+      - ROS_HOSTNAME=192.168.1.136
+      - ROS_MASTER_URI=http://192.168.1.136:11311
+    privileged: true
+    volumes:
+      - /dev/video0:/dev/video1
+      - /home/ubuntu/ros-docker-camera:/home
+    restart: unless-stopped
+    command: bash -c "roslaunch /home/uvc.launch"
+

@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  detector:
+    image: snowzach/doods:arm64
+    container_name: doods
+    ports: 
+      - 8080:8080
+    restart: unless-stopped
+
+  camera:
+    build: ./camera
+    network_mode: host
+    container_name: cam
+    environment:
+      - ROS_HOSTNAME=192.168.1.136
+      - ROS_MASTER_URI=http://192.168.1.136:11311
+    privileged: true
+    volumes:
+      - /dev/video0:/dev/video1
+      - ./camera:/home
+    restart: unless-stopped
+    command: bash -c "roslaunch /home/uvc.launch"
+
+  parser:
+    build: ./parser
+    container_name: parser
+    volumes: 
+      - ./parser/doods_parser:/root/catkin_ws/src/doods_parser
+    environment: 
+      - ROS_IP=192.168.1.136
+      - ROS_MASTER_URI=http://192.168.1.136:11311
+    network_mode: host
+    ports: 
+      - 8080:8080
+    depends_on: 
+      - detector
+      - camera
+    restart: unless-stopped
+    command: bash -c "source /root/catkin_ws/devel/setup.bash && roslaunch doods_parser parser.launch"
